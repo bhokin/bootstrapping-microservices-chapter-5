@@ -32,10 +32,10 @@ function connectRabbit() {
 //
 // Send the "viewed" to the history microservice.
 //
-function sendViewedMessage(messageChannel, videoPath) {
-    console.log(`Publishing message on "viewed" exchange.`);
+function sendViewedMessage(messageChannel, videoPath, videoId) {
+    console.log(`Publishing message on "viewed-${videoId}" exchange.`);
         
-    const msg = { videoPath: videoPath };
+    const msg = { videoPath: videoPath, videoId: videoId };
     const jsonMsg = JSON.stringify(msg);
     messageChannel.publish("viewed", "", Buffer.from(jsonMsg)); // Publish message to the "viewed" exchange.
 }
@@ -44,9 +44,11 @@ function sendViewedMessage(messageChannel, videoPath) {
 // Setup event handlers.
 //
 function setupHandlers(app, messageChannel) {
-    app.get("/video", (req, res) => { // Route for streaming video.
+    app.get("/video/:id", (req, res) => { // Route for streaming video.
 
-        const videoPath = "./videos/SampleVideo_1280x720_1mb.mp4";
+        var videoId = req.params.id;
+
+        const videoPath = videoId == 1 ? "./videos/SampleVideo_1280x720_1mb.mp4": "./videos/istockphoto.mp4";
         fs.stat(videoPath, (err, stats) => {
             if (err) {
                 console.error("An error occurred ");
@@ -61,7 +63,7 @@ function setupHandlers(app, messageChannel) {
     
             fs.createReadStream(videoPath).pipe(res);
 
-            sendViewedMessage(messageChannel, videoPath); // Send message to "history" microservice that this video has been "viewed".
+            sendViewedMessage(messageChannel, videoPath, videoId); // Send message to "history" microservice that this video has been "viewed".
         });
     });
 }

@@ -55,10 +55,11 @@ function setupHandlers(app, db, messageChannel) {
 
     function consumeViewedMessage(msg) { // Handler for coming messages.
         const parsedMsg = JSON.parse(msg.content.toString()); // Parse the JSON message.
-        console.log("Received a 'viewed' message:");
+        console.log(`Received a 'viewed' message:`);
         console.log(JSON.stringify(parsedMsg, null, 4)); // JUST PRINTING THE RECEIVED MESSAGE.
 
         // ... ADD YOUR CODE HERE TO PROCESS THE MESSAGE ...
+        console.log(`recommendation video${JSON.stringify(parsedMsg, null, 4).videoId}`)
 
         console.log("Acknowledging message was handled.");
 
